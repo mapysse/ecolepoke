@@ -1,0 +1,145 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "noms": {
+      "$nom": {
+        ".read": true,
+        ".write": "!data.exists()",
+        ".validate": "$nom.matches(/^[a-z0-9_-]{3,20}$/) && newData.val() === true"
+      }
+    },
+    "comptes": {
+      "$id": {
+        ".read": "$id.matches(/^[0-9a-f]{64}$/)",
+        ".write": "$id.matches(/^[0-9a-f]{64}$/)",
+        ".validate": "newData.hasChildren(['nom', 'maj'])",
+        "nom": {
+          ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 20"
+        },
+        "lecons": {
+          "$l": {
+            ".validate": "$l.length < 60 && newData.isBoolean()"
+          }
+        },
+        "examens": {
+          "$c": {
+            ".validate": "$c.length < 40 && newData.hasChildren(['reussi', 'meilleur', 'tentatives'])",
+            "reussi": {
+              ".validate": "newData.isBoolean()"
+            },
+            "meilleur": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1"
+            },
+            "tentatives": {
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            },
+            "$autre": {
+              ".validate": false
+            }
+          }
+        },
+        "maj": {
+          ".validate": "newData.val() === now"
+        },
+        "$autre": {
+          ".validate": false
+        },
+        "historique": {
+          "$c": {
+            ".validate": "$c.length < 40",
+            "$i": {
+              ".validate": "newData.hasChildren(['d', 's'])",
+              "d": {
+                ".validate": "newData.isNumber()"
+              },
+              "s": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1"
+              },
+              "$autre": {
+                ".validate": false
+              }
+            }
+          }
+        },
+        "erreurs": {
+          "$c": {
+            ".validate": "$c.length < 40",
+            "$q": {
+              ".validate": "$q.length < 20 && newData.hasChildren(['t', 'v', 'n'])",
+              "t": {
+                ".validate": "newData.isString() && newData.val().length <= 200"
+              },
+              "v": {
+                ".validate": "newData.isNumber() && newData.val() >= 0"
+              },
+              "n": {
+                ".validate": "newData.isNumber() && newData.val() >= 0"
+              },
+              "$autre": {
+                ".validate": false
+              }
+            }
+          }
+        },
+        "notes": {
+          "active": {
+            ".validate": "newData.isString() && newData.val().length < 30"
+          },
+          "feuilles": {
+            "$f": {
+              ".validate": "$f.length < 30 && newData.hasChildren(['titre', 'ordre'])",
+              "titre": {
+                ".validate": "newData.isString() && newData.val().length <= 40"
+              },
+              "html": {
+                ".validate": "newData.isString() && newData.val().length <= 200000"
+              },
+              "ordre": {
+                ".validate": "newData.isNumber()"
+              },
+              "$autre": {
+                ".validate": false
+              }
+            }
+          },
+          "$autre": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "stats": {
+      "$cours": {
+        ".validate": "$cours.length < 40",
+        "questions": {
+          "$q": {
+            ".validate": "$q.length < 20",
+            "texte": {
+              ".write": true,
+              ".validate": "newData.isString() && newData.val().length <= 300"
+            },
+            "vus": {
+              ".write": true,
+              ".validate": "newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
+            },
+            "erreurs": {
+              ".write": true,
+              ".validate": "newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
+            }
+          }
+        },
+        "examens": {
+          "tentatives": {
+            ".write": true,
+            ".validate": "newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
+          },
+          "reussis": {
+            ".write": true,
+            ".validate": "newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
+          }
+        }
+      }
+    }
+  }
+}
